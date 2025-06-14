@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <title>Groceries List</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-image: linear-gradient(120deg, #84fab0, #8fd3f4);
+      color: white;
+      font-family: "Poppins", sans-serif;
+      min-height: 100vh;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      background: #2c5aa0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4caf50;
+    }
+
+    .status-indicator.offline {
+      background: #f44336;
+    }
+
+    .logout-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: "Poppins", sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    header {
+      font-size: 2rem;
+      text-align: center;
+      padding: 2rem 0 1rem 0;
+    }
+
+    form {
+      min-height: 10vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0;
+      padding: 0 2rem;
+    }
+
+    .input-button-wrapper {
+      display: flex;
+      align-items: stretch;
+    }
+
+    form input {
+      padding: 0.5rem;
+      font-size: 2rem;
+      border: none;
+      background: white;
+      border-radius: 0.5rem 0 0 0.5rem;
+      margin: 0;
+      outline: none;
+      min-width: 300px;
+    }
+
+    form input:disabled {
+      background: #f5f5f5;
+      color: #999;
+    }
+
+    form button {
+      padding: 0.5rem;
+      font-size: 2rem;
+      color: #2c5aa0;
+      background: white;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 0 0.5rem 0.5rem 0;
+      margin: 0;
+    }
+
+    form button:hover:not(:disabled) {
+      background: #2c5aa0;
+      color: white;
+    }
+
+    form button:disabled {
+      background: #f5f5f5;
+      color: #999;
+      cursor: not-allowed;
+    }
+
+    .select {
+      margin-left: 1rem;
+      position: relative;
+      overflow: visible;
+      display: flex;
+      align-items: center;
+    }
+
+    .select-display {
+      color: #2c5aa0;
+      font-family: "Poppins", sans-serif;
+      width: 10rem;
+      padding: 1rem;
+      background: white;
+      pointer-events: none;
+    }
+
+    .select-arrow {
+      background: #2c5aa0;
+      color: white;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .select-arrow:hover {
+      background: white;
+      color: #2c5aa0;
+    }
+
+    .select-options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #ddd;
+      display: none;
+      z-index: 1000;
+    }
+
+    .select-options.active {
+      display: block;
+    }
+
+    .option {
+      padding: 1rem;
+      color: #2c5aa0;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .option:hover {
+      background: #f0f0f0;
+    }
+
+    .groceries-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .groceries-list {
+      min-width: 60%;
+      list-style: none;
+    }
+
+    .grocery-item {
+      margin: 0.5rem;
+      background: white;
+      color: black;
+      font-size: 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: grab;
+      animation: slideInUp 0.3s ease;
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .grocery-item:hover:not(.dragging) {
+      cursor: grab;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .grocery-item:active {
+      cursor: grabbing;
+    }
+
+    .grocery-item.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+      z-index: 1000;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    }
+
+    .grocery-item:not(.dragging) {
+      transition: all 0.2s ease;
+    }
+
+    .grocery-item.drag-over-top {
+      border-top: 3px solid #2c5aa0;
+      margin-top: 10px;
+    }
+
+    .grocery-item.drag-over-bottom {
+      border-bottom: 3px solid #2c5aa0;
+      margin-bottom: 10px;
+    }
+
+    .grocery-content {
+      flex: 1;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .grocery-name {
+      font-weight: 500;
+      font-size: 1.2rem;
+    }
+
+    .grocery-meta {
+      font-size: 0.8rem;
+      color: #666;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .user-tag {
+      background: #e3f2fd;
+      color: #1976d2;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+
+    .action-tag {
+      color: #666;
+    }
+
+    .timestamp {
+      color: #999;
+    }
+
+    .real-time-badge {
+      background: #4caf50;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 0.6rem;
+      font-weight: bold;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+
+    .grocery-actions {
+      display: flex;
+    }
+
+    .complete-btn, .trash-btn {
+      border: none;
+      padding: 1rem;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .complete-btn {
+      background: #4caf50;
+      color: white;
+    }
+
+    .complete-btn:hover {
+      background: #45a049;
+    }
+
+    .trash-btn {
+      background: #f44336;
+      color: white;
+    }
+
+    .trash-btn:hover {
+      background: #d32f2f;
+    }
+
+    .completed {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    .completed .grocery-name {
+      text-decoration: line-through;
+    }
+
+    .fall {
+      transform: translateY(8rem) rotateZ(20deg);
+      opacity: 0;
+    }
+
+    .fa-trash, .fa-check {
+      pointer-events: none;
+    }
+
+    .activity-log {
+      max-width: 60%;
+      margin: 2rem auto;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .activity-log h3 {
+      margin-bottom: 1rem;
+      text-align: center;
+      color: white;
+    }
+
+    .activity-item {
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      padding: 0.8rem;
+      margin: 0.5rem 0;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      animation: slideInRight 0.3s ease;
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .activity-text {
+      flex: 1;
+    }
+
+    .activity-time {
+      color: #666;
+      font-size: 0.8rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #2c5aa0;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #f44336;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 2000;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+
+    .error-toast.show {
+      transform: translateX(0);
+    }
+
+    .sync-indicator {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .sync-indicator.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+<div class="top-bar">
+  <div class="user-info">
+    <div class="user-avatar" id="user-avatar"></div>
+    <div>
+      <div id="user-name"></div>
+      <div class="connection-status">
+        <div class="status-indicator" id="status-indicator"></div>
+        <span id="connection-text">Connected</span>
+      </div>
+    </div>
+  </div>
+  <button class="logout-btn" onclick="logout()">
+    <i class="fas fa-sign-out-alt"></i> Logout
+  </button>
+</div>
+
+<header>
+  <h1>🛒 Groceries List</h1>
+</header>
+
+<form>
+  <div class="input-button-wrapper">
+    <input type="text" class="grocery-input" placeholder="Add grocery item..." id="grocery-input"/>
+    <button class="grocery-button" type="submit" id="add-btn">
+      <i class="fas fa-plus-square"></i>
+    </button>
+  </div>
+  <div class="select">
+    <div class="select-display">All</div>
+    <div class="select-arrow">
+      <i class="fas fa-chevron-down"></i>
+    </div>
+    <div class="select-options">
+      <div class="option" data-value="all">All</div>
+      <div class="option" data-value="completed">Completed</div>
+      <div class="option" data-value="uncompleted">Uncompleted</div>
+    </div>
+  </div>
+</form>
+
+<div class="groceries-container">
+  <ul class="groceries-list" id="groceries-list"></ul>
+</div>
+
+<div class="activity-log">
+  <h3><i class="fas fa-history"></i> Recent Activity</h3>
+  <div class="activity-list" id="activity-list"></div>
+</div>
+
+<div class="sync-indicator" id="sync-indicator">
+  <div class="loading-spinner"></div>
+  <span>Syncing...</span>
+</div>
+
+<div class="error-toast" id="error-toast">
+  <i class="fas fa-exclamation-circle"></i>
+  <span id="error-message"></span>
+</div>
+
+<!-- Supabase JavaScript client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  // Replace with your Supabase project details
+  const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL';
+  const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+  // Initialize Supabase client
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // Check authentication
+  const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+  if (!currentUser) {
+    window.location.href = 'index.html';
+  }
+
+  // Initialize user info
+  document.getElementById('user-name').textContent = currentUser.name;
+  document.getElementById('user-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
+
+  // Global variables
+  let groceries = [];
+  let activities = [];
+  let isOnline = navigator.onLine;
+  let draggedElement = null;
+  let currentFilter = 'all';
+
+  // DOM elements
+  const groceryInput = document.getElementById('grocery-input');
+  const addButton = document.getElementById('add-btn');
+  const groceriesList = document.getElementById('groceries-list');
+  const activityList = document.getElementById('activity-list');
+  const selectArrow = document.querySelector('.select-arrow');
+  const selectDisplay = document.querySelector('.select-display');
+  const selectOptions = document.querySelector('.select-options');
+  const options = document.querySelectorAll('.option');
+
+  // Initialize app
+  document.addEventListener('DOMContentLoaded', initializeApp);
+
+  async function initializeApp() {
+    updateConnectionStatus();
+    await loadInitialData();
+    setupEventListeners();
+    setupRealtimeSubscriptions();
+
+    // Update connection status periodically
+    setInterval(updateConnectionStatus, 5000);
+  }
+
+  function setupEventListeners() {
+    // Form submission
+    document.querySelector('form').addEventListener('submit', handleAddGrocery);
+
+    // Grocery list actions
+    groceriesList.addEventListener('click', handleGroceryActions);
+
+    // Filter dropdown
+    if (selectArrow && selectDisplay && selectOptions) {
+      selectArrow.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        selectOptions.classList.toggle('active');
+      });
+
+      options.forEach(option => {
+        option.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const value = option.getAttribute('data-value');
+          const text = option.textContent;
+
+          selectDisplay.textContent = text;
+          selectOptions.classList.remove('active');
+          currentFilter = value;
+          filterGroceries();
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.select')) {
+          selectOptions.classList.remove('active');
+        }
+      });
+    }
+
+    // Online/offline events
+    window.addEventListener('online', () => {
+      isOnline = true;
+      updateConnectionStatus();
+      syncPendingChanges();
+    });
+
+    window.addEventListener('offline', () => {
+      isOnline = false;
+      updateConnectionStatus();
+    });
+  }
+
+  async function loadInitialData() {
+    showSyncIndicator(true);
+
+    try {
+      await Promise.all([
+        loadGroceries(),
+        loadActivities()
+      ]);
+    } catch (error) {
+      console.error('Error loading initial data:', error);
+      showError('Failed to load data. Please refresh the page.');
+    }
+
+    showSyncIndicator(false);
+  }
+
+  async function loadGroceries() {
+    const { data, error } = await supabase
+            .from('groceries')
+            .select(`
+                    *,
+                    users!added_by (name)
+                `)
+            .order('position', { ascending: true });
+
+    if (error) {
+      throw error;
+    }
+
+    groceries = data || [];
+    renderGroceries();
+  }
+
+  async function loadActivities() {
+    const { data, error } = await supabase
+            .from('activities')
+            .select(`
+                    *,
+                    users!user_id (name)
+                `)
+            .order('created_at', { ascending: false })
+            .limit(20);
+
+    if (error) {
+      throw error;
+    }
+
+    activities = data || [];
+    renderActivities();
+  }
+
+  function renderGroceries() {
+    groceriesList.innerHTML = '';
+
+    if (groceries.length === 0) {
+      showEmptyState();
+      return;
+    }
+
+    groceries.forEach(grocery => {
+      const groceryElement = createGroceryElement(grocery);
+      groceriesList.appendChild(groceryElement);
+    });
+
+    filterGroceries();
+  }
+
+  function createGroceryElement(grocery) {
+    const groceryDiv = document.createElement('div');
+    groceryDiv.className = 'grocery-item';
+    groceryDiv.dataset.id = grocery.id;
+    groceryDiv.draggable = true;
+
+    if (grocery.completed) {
+      groceryDiv.classList.add('completed');
+    }
+
+    const timeAgo = getTimeAgo(grocery.created_at);
+    const isRecent = Date.now() - new Date(grocery.created_at).getTime() < 10000; // 10 seconds
+
+    groceryDiv.innerHTML = `
+                <div class="grocery-content">
+                    <div class="grocery-name">${escapeHtml(grocery.name)}</div>
+                    <div class="grocery-meta">
+                        <span class="user-tag">${escapeHtml(grocery.users?.name || 'Unknown')}</span>
+                        <span class="action-tag">added</span>
+                        <span class="timestamp">${timeAgo}</span>
+                        ${isRecent ? '<span class="real-time-badge">LIVE</span>' : ''}
+                    </div>
+                </div>
+                <div class="grocery-actions">
+                    <button class="complete-btn">
+                        <i class="fas fa-check"></i>
+                    </button>
+                    <button class="trash-btn">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+
+    addDragListeners(groceryDiv);
+    return groceryDiv;
+  }
+
+  function renderActivities() {
+    activityList.innerHTML = '';
+
+    if (activities.length === 0) {
+      activityList.innerHTML = '<div style="text-align: center; color: #666; padding: 1rem;">No activity yet</div>';
+      return;
+    }
+
+    activities.forEach(activity => {
+      const activityDiv = document.createElement('div');
+      activityDiv.className = 'activity-item';
+
+      const timeAgo = getTimeAgo(activity.created_at);
+
+      activityDiv.innerHTML = `
+                    <div class="activity-text">
+                        <strong>${escapeHtml(activity.users?.name || 'Unknown')}</strong> ${activity.action} "${escapeHtml(activity.item_name)}"
+                    </div>
+                    <div class="activity-time">${timeAgo}</div>
+                `;
+
+      activityList.appendChild(activityDiv);
+    });
+  }
+
+  async function handleAddGrocery(e) {
+    e.preventDefault();
+
+    const name = groceryInput.value.trim();
+    if (!name) return;
+
+    setFormDisabled(true);
+    showSyncIndicator(true);
+
+    try {
+      const maxPosition = groceries.length > 0 ? Math.max(...groceries.map(g => g.position || 0)) : 0;
+
+      const { data, error } = await supabase
+              .from('groceries')
+              .insert([{
+                name: name,
+                completed: false,
+                position: maxPosition + 1,
+                added_by: currentUser.id
+              }])
+              .select(`
+                        *,
+                        users!added_by (name)
+                    `)
+              .single();
+
+      if (error) throw error;
+
+      // Add to local array
+      groceries.push(data);
+
+      // Add activity
+      await logActivity('added', name);
+
+      // Re-render
+      renderGroceries();
+
+      groceryInput.value = '';
+
+    } catch (error) {
+      console.error('Error adding grocery:', error);
+      showError('Failed to add item. Please try again.');
+    }
+
+    setFormDisabled(false);
+    showSyncIndicator(false);
+  }
+
+  async function handleGroceryActions(e) {
+    const button = e.target.closest('button');
+    if (!button) return;
+
+    const groceryDiv = button.closest('.grocery-item');
+    const groceryId = groceryDiv.dataset.id;
+    const grocery = groceries.find(g => g.id === groceryId);
+
+    if (!grocery) return;
+
+    if (button.classList.contains('trash-btn')) {
+      await handleDeleteGrocery(grocery, groceryDiv);
+    } else if (button.classList.contains('complete-btn')) {
+      await handleToggleComplete(grocery, groceryDiv);
+    }
+  }
+
+  async function handleDeleteGrocery(grocery, groceryDiv) {
+    groceryDiv.classList.add('fall');
+
+    try {
+      const { error } = await supabase
+              .from('groceries')
+              .delete()
+              .eq('id', grocery.id);
+
+      if (error) throw error;
+
+      await logActivity('removed', grocery.name);
+
+      // Remove from local array
+      groceries = groceries.filter(g => g.id !== grocery.id);
+
+      setTimeout(() => {
+        if (groceryDiv.parentNode) {
+          groceryDiv.remove();
+        }
+        if (groceries.length === 0) {
+          showEmptyState();
+        }
+      }, 300);
+
+    } catch (error) {
+      console.error('Error deleting grocery:', error);
+      groceryDiv.classList.remove('fall');
+      showError('Failed to delete item. Please try again.');
+    }
+  }
+
+  async function handleToggleComplete(grocery, groceryDiv) {
+    const newCompleted = !grocery.completed;
+    groceryDiv.classList.toggle('completed', newCompleted);
+
+    try {
+      const { error } = await supabase
+              .from('groceries')
+              .update({
+                completed: newCompleted,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', grocery.id);
+
+      if (error) throw error;
+
+      grocery.completed = newCompleted;
+      const action = newCompleted ? 'completed' : 'uncompleted';
+      await logActivity(action, grocery.name);
+
+    } catch (error) {
+      console.error('Error updating grocery:', error);
+      groceryDiv.classList.toggle('completed', !newCompleted);
+      showError('Failed to update item. Please try again.');
+    }
+  }
+
+  async function logActivity(action, itemName) {
+    try {
+      const { data, error } = await supabase
+              .from('activities')
+              .insert([{
+                action: action,
+                item_name: itemName,
+                user_id: currentUser.id
+              }])
+              .select(`
+                        *,
+                        users!user_id (name)
+                    `)
+              .single();
+
+      if (error) throw error;
+
+      // Add to local activities array
+      activities.unshift(data);
+
+      // Keep only last 20
+      if (activities.length > 20) {
+        activities = activities.slice(0, 20);
+      }
+
+      renderActivities();
+
+    } catch (error) {
+      console.error('Error logging activity:', error);
+    }
+  }
+
+  function setupRealtimeSubscriptions() {
+    // Subscribe to groceries changes
+    supabase
+            .channel('groceries_changes')
+            .on('postgres_changes',
+                    {
+                      event: '*',
+                      schema: 'public',
+                      table: 'groceries'
+                    },
+                    handleGroceriesRealtimeChange
+            )
+            .subscribe();
+
+    // Subscribe to activities changes
+    supabase
+            .channel('activities_changes')
+            .on('postgres_changes',
+                    {
+                      event: 'INSERT',
+                      schema: 'public',
+                      table: 'activities'
+                    },
+                    handleActivitiesRealtimeChange
+            )
+            .subscribe();
+  }
+
+  async function handleGroceriesRealtimeChange(payload) {
+    console.log('Groceries change:', payload);
+
+    if (payload.eventType === 'INSERT') {
+      // Load the new grocery with user info
+      const { data } = await supabase
+              .from('groceries')
+              .select(`
+                        *,
+                        users!added_by (name)
+                    `)
+              .eq('id', payload.new.id)
+              .single();
+
+      if (data && !groceries.find(g => g.id === data.id)) {
+        groceries.push(data);
+        groceries.sort((a, b) => (a.position || 0) - (b.position || 0));
+        renderGroceries();
+      }
+    } else if (payload.eventType === 'UPDATE') {
+      const index = groceries.findIndex(g => g.id === payload.new.id);
+      if (index !== -1) {
+        groceries[index] = { ...groceries[index], ...payload.new };
+        renderGroceries();
+      }
+    } else if (payload.eventType === 'DELETE') {
+      groceries = groceries.filter(g => g.id !== payload.old.id);
+      renderGroceries();
+    }
+  }
+
+  async function handleActivitiesRealtimeChange(payload) {
+    console.log('Activity change:', payload);
+
+    // Load the new activity with user info
+    const { data } = await supabase
+            .from('activities')
+            .select(`
+                    *,
+                    users!user_id (name)
+                `)
+            .eq('id', payload.new.id)
+            .single();
+
+    if (data && !activities.find(a => a.id === data.id)) {
+      activities.unshift(data);
+      if (activities.length > 20) {
+        activities = activities.slice(0, 20);
+      }
+      renderActivities();
+    }
+  }
+
+  // Drag and drop functions
+  function addDragListeners(element) {
+    element.addEventListener('dragstart', dragStart);
+    element.addEventListener('dragend', dragEnd);
+    element.addEventListener('dragover', dragOver);
+    element.addEventListener('dragenter', dragEnter);
+    element.addEventListener('drop', dragDrop);
+  }
+
+  function dragStart(e) {
+    draggedElement = this;
+    this.classList.add('dragging');
+
+    const emptyImg = new Image();
+    emptyImg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=';
+    e.dataTransfer.setDragImage(emptyImg, 0, 0);
+
+    e.dataTransfer.effectAllowed = 'move';
+  }
+
+  async function dragEnd(e) {
+    this.classList.remove('dragging');
+
+    const allGroceries = groceriesList.querySelectorAll('.grocery-item');
+    allGroceries.forEach(grocery => {
+      grocery.classList.remove('drag-over-top', 'drag-over-bottom');
+    });
+
+    if (draggedElement) {
+      await updateGroceriesOrder();
+    }
+
+    draggedElement = null;
+  }
+
+  function dragOver(e) {
+    if (e.preventDefault) {
+      e.preventDefault();
+    }
+
+    if (this === draggedElement) {
+      return false;
+    }
+
+    e.dataTransfer.dropEffect = 'move';
+
+    const rect = this.getBoundingClientRect();
+    const midY = rect.top + rect.height / 2;
+    const mouseY = e.clientY;
+
+    this.classList.remove('drag-over-top', 'drag-over-bottom');
+
+    if (mouseY < midY) {
+      this.classList.add('drag-over-top');
+      if (this.parentNode && draggedElement) {
+        this.parentNode.insertBefore(draggedElement, this);
+      }
+    } else {
+      this.classList.add('drag-over-bottom');
+      if (this.parentNode && draggedElement) {
+        this.parentNode.insertBefore(draggedElement, this.nextSibling);
+      }
+    }
+
+    return false;
+  }
+
+  function dragEnter(e) {
+    if (this === draggedElement) {
+      return;
+    }
+    e.dataTransfer.dropEffect = 'move';
+  }
+
+  function dragDrop(e) {
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    }
+
+    this.classList.remove('drag-over-top', 'drag-over-bottom');
+    return false;
+  }
+
+  async function updateGroceriesOrder() {
+    const groceryElements = groceriesList.querySelectorAll('.grocery-item');
+    const updates = [];
+
+    groceryElements.forEach((element, index) => {
+      const id = element.dataset.id;
+      const grocery = groceries.find(g => g.id === id);
+      if (grocery && grocery.position !== index + 1) {
+        updates.push({
+          id: id,
+          position: index + 1
+        });
+        grocery.position = index + 1;
+      }
+    });
+
+    if (updates.length > 0) {
+      try {
+        for (const update of updates) {
+          await supabase
+                  .from('groceries')
+                  .update({ position: update.position })
+                  .eq('id', update.id);
+        }
+      } catch (error) {
+        console.error('Error updating order:', error);
+        showError('Failed to save new order');
+      }
+    }
+  }
+
+  function filterGroceries() {
+    const groceryElements = groceriesList.querySelectorAll('.grocery-item');
+
+    groceryElements.forEach(element => {
+      const isCompleted = element.classList.contains('completed');
+      let shouldShow = true;
+
+      switch (currentFilter) {
+        case 'completed':
+          shouldShow = isCompleted;
+          break;
+        case 'uncompleted':
+          shouldShow = !isCompleted;
+          break;
+        case 'all':
+        default:
+          shouldShow = true;
+          break;
+      }
+
+      element.style.display = shouldShow ? 'flex' : 'none';
+    });
+  }
+
+  function updateConnectionStatus() {
+    const indicator = document.getElementById('status-indicator');
+    const text = document.getElementById('connection-text');
+
+    if (isOnline) {
+      indicator.classList.remove('offline');
+      text.textContent = 'Connected';
+      enableForm();
+    } else {
+      indicator.classList.add('offline');
+      text.textContent = 'Offline';
+      disableForm();
+    }
+  }
+
+  function setFormDisabled(disabled) {
+    groceryInput.disabled = disabled;
+    addButton.disabled = disabled;
+  }
+
+  function enableForm() {
+    setFormDisabled(false);
+  }
+
+  function disableForm() {
+    setFormDisabled(true);
+  }
+
+  function showSyncIndicator(show) {
+    const indicator = document.getElementById('sync-indicator');
+    indicator.classList.toggle('show', show);
+  }
+
+  function showError(message) {
+    const toast = document.getElementById('error-toast');
+    const messageEl = document.getElementById('error-message');
+
+    messageEl.textContent = message;
+    toast.classList.add('show');
+
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 5000);
+  }
+
+  function showEmptyState() {
+    groceriesList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-shopping-cart"></i>
+                    <h3>Your grocery list is empty</h3>
+                    <p>Add some items to get started!</p>
+                </div>
+            `;
+  }
+
+  function getTimeAgo(timestamp) {
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffInSeconds = Math.floor((now - time) / 1000);
+
+    if (diffInSeconds < 60) return 'just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+
+    return time.toLocaleDateString();
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  async function syncPendingChanges() {
+    // In a more advanced implementation, you would sync any pending offline changes here
+    console.log('Syncing pending changes...');
+    await loadInitialData();
+  }
+
+  function logout() {
+    sessionStorage.removeItem('currentUser');
+    window.location.href = 'index.html';
+  }
+</script>
+</body>
+</html>

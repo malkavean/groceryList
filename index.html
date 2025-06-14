@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <title>Groceries List - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-image: linear-gradient(120deg, #84fab0, #8fd3f4);
+            color: white;
+            font-family: "Poppins", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .auth-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            color: #333;
+            min-width: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #2c5aa0;
+            font-weight: 600;
+        }
+
+        .app-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: #666;
+            font-weight: 300;
+        }
+
+        .form-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 5px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-family: "Poppins", sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #2c5aa0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .form-container {
+            position: relative;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: "Poppins", sans-serif;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2c5aa0;
+            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+        }
+
+        .form-input.error {
+            border-color: #d32f2f;
+            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            background: #2c5aa0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: "Poppins", sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .auth-btn:hover {
+            background: #1e3d6f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(44, 90, 160, 0.3);
+        }
+
+        .auth-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .error-message {
+            color: #d32f2f;
+            font-size: 14px;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .success-message {
+            color: #4caf50;
+            font-size: 14px;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            margin-top: 1rem;
+            color: #666;
+        }
+
+        .password-requirements {
+            font-size: 12px;
+            color: #666;
+            margin-top: 0.5rem;
+            text-align: left;
+            display: none;
+        }
+
+        .requirement {
+            margin: 2px 0;
+        }
+
+        .requirement.met {
+            color: #4caf50;
+        }
+
+        .requirement.met:before {
+            content: "✓ ";
+        }
+
+        .requirement:not(.met):before {
+            content: "✗ ";
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+<div class="auth-container">
+    <h1 class="app-title">🛒 Groceries List</h1>
+    <p class="app-subtitle">Collaborative shopping made simple</p>
+
+    <div class="form-tabs">
+        <button class="tab-btn active" onclick="showForm('login')">Login</button>
+        <button class="tab-btn" onclick="showForm('register')">Register</button>
+    </div>
+
+    <div class="form-container">
+        <!-- Login Form -->
+        <form id="login-form" class="auth-form active">
+            <div class="form-group">
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" class="form-input" required>
+            </div>
+
+            <button type="submit" class="auth-btn">Login</button>
+            <div id="login-error" class="error-message"></div>
+            <div class="loading" id="login-loading">Signing in...</div>
+        </form>
+
+        <!-- Register Form -->
+        <form id="register-form" class="auth-form">
+            <div class="form-group">
+                <label for="register-name">Full Name</label>
+                <input type="text" id="register-name" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+                <label for="register-email">Email</label>
+                <input type="email" id="register-email" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+                <label for="register-password">Password</label>
+                <input type="password" id="register-password" class="form-input" required>
+                <div class="password-requirements">
+                    <div class="requirement" id="req-length">At least 8 characters</div>
+                    <div class="requirement" id="req-number">At least one number</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="register-confirm-password">Confirm Password</label>
+                <input type="password" id="register-confirm-password" class="form-input" required>
+            </div>
+
+            <button type="submit" class="auth-btn">Create Account</button>
+            <div id="register-error" class="error-message"></div>
+            <div id="register-success" class="success-message"></div>
+            <div class="loading" id="register-loading">Creating account...</div>
+        </form>
+    </div>
+</div>
+
+<!-- Supabase JavaScript client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    // Replace with your Supabase project details
+    const SUPABASE_URL = 'https://jzjbwdeiajbugyiknftv.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6amJ3ZGVpYWpidWd5aWtuZnR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MTExNjksImV4cCI6MjA2NTQ4NzE2OX0.AQ9GQEHpZ60bP5OyMfuic8HYCVqra2uKBU_FnGW9RZk';
+
+    // Initialize Supabase client
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Check if user is already logged in
+    checkExistingSession();
+
+    async function checkExistingSession() {
+        const currentUser = sessionStorage.getItem('currentUser');
+        if (currentUser) {
+            window.location.href = 'groceries.html';
+        }
+    }
+
+    // Form switching
+    function showForm(formType) {
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const tabs = document.querySelectorAll('.tab-btn');
+
+        tabs.forEach(tab => tab.classList.remove('active'));
+        loginForm.classList.remove('active');
+        registerForm.classList.remove('active');
+
+        if (formType === 'login') {
+            loginForm.classList.add('active');
+            tabs[0].classList.add('active');
+        } else {
+            registerForm.classList.add('active');
+            tabs[1].classList.add('active');
+        }
+
+        clearErrors();
+    }
+
+    // Password strength checker
+    const passwordInput = document.getElementById('register-password');
+    const requirementsContainer = document.querySelector('.password-requirements');
+
+    passwordInput.addEventListener('input', function() {
+        const password = this.value;
+
+        if (password.length > 0) {
+            requirementsContainer.style.display = 'block';
+            checkPasswordStrength(password);
+        } else {
+            requirementsContainer.style.display = 'none';
+        }
+    });
+
+    function checkPasswordStrength(password) {
+        const requirements = {
+            length: password.length >= 8,
+            number: /\d/.test(password)
+        };
+
+        document.getElementById('req-length').classList.toggle('met', requirements.length);
+        document.getElementById('req-number').classList.toggle('met', requirements.number);
+
+        return requirements.length && requirements.number;
+    }
+
+    // Form submission handlers
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        handleLogin();
+    });
+
+    document.getElementById('register-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        handleRegister();
+    });
+
+    async function handleLogin() {
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+
+        clearErrors();
+        showLoading('login', true);
+
+        if (!email || !password) {
+            showError('login-error', 'Please fill in all fields');
+            showLoading('login', false);
+            return;
+        }
+
+        try {
+            // Query users table to check credentials
+            const { data: users, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('email', email)
+                .eq('password_hash', password) // In real app, use proper password hashing
+                .single();
+
+            if (error || !users) {
+                showError('login-error', 'Invalid email or password');
+            } else {
+                // Login successful
+                const currentUser = {
+                    id: users.id,
+                    name: users.name,
+                    email: users.email
+                };
+
+                sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+                window.location.href = 'groceries.html';
+            }
+        } catch (err) {
+            console.error('Login error:', err);
+            showError('login-error', 'Login failed. Please try again.');
+        }
+
+        showLoading('login', false);
+    }
+
+    async function handleRegister() {
+        const name = document.getElementById('register-name').value.trim();
+        const email = document.getElementById('register-email').value.trim();
+        const password = document.getElementById('register-password').value;
+        const confirmPassword = document.getElementById('register-confirm-password').value;
+
+        clearErrors();
+        showLoading('register', true);
+
+        // Validation
+        if (!name || !email || !password || !confirmPassword) {
+            showError('register-error', 'Please fill in all fields');
+            showLoading('register', false);
+            return;
+        }
+
+        if (!checkPasswordStrength(password)) {
+            showError('register-error', 'Password must meet all requirements');
+            showLoading('register', false);
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            showError('register-error', 'Passwords do not match');
+            showLoading('register', false);
+            return;
+        }
+
+        try {
+            // Check if user already exists
+            const { data: existingUser } = await supabase
+                .from('users')
+                .select('email')
+                .eq('email', email)
+                .single();
+
+            if (existingUser) {
+                showError('register-error', 'An account with this email already exists');
+                showLoading('register', false);
+                return;
+            }
+
+            // Create new user
+            const { data, error } = await supabase
+                .from('users')
+                .insert([
+                    {
+                        name: name,
+                        email: email,
+                        password_hash: password // In real app, hash the password
+                    }
+                ])
+                .select()
+                .single();
+
+            if (error) {
+                throw error;
+            }
+
+            // Show success message
+            showSuccess('register-success', 'Account created successfully! You can now login.');
+
+            // Clear form
+            document.getElementById('register-form').reset();
+            requirementsContainer.style.display = 'none';
+
+            // Switch to login form after delay
+            setTimeout(() => {
+                showForm('login');
+            }, 2000);
+
+        } catch (err) {
+            console.error('Registration error:', err);
+            showError('register-error', 'Registration failed. Please try again.');
+        }
+
+        showLoading('register', false);
+    }
+
+    function showLoading(form, show) {
+        const loadingElement = document.getElementById(`${form}-loading`);
+        const button = document.querySelector(`#${form}-form .auth-btn`);
+
+        if (show) {
+            loadingElement.style.display = 'block';
+            button.disabled = true;
+        } else {
+            loadingElement.style.display = 'none';
+            button.disabled = false;
+        }
+    }
+
+    function showError(elementId, message) {
+        const errorElement = document.getElementById(elementId);
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+    }
+
+    function showSuccess(elementId, message) {
+        const successElement = document.getElementById(elementId);
+        successElement.textContent = message;
+        successElement.style.display = 'block';
+    }
+
+    function clearErrors() {
+        const errorElements = document.querySelectorAll('.error-message, .success-message');
+        errorElements.forEach(el => {
+            el.style.display = 'none';
+            el.textContent = '';
+        });
+    }
+
+    // Real-time validation feedback
+    document.getElementById('register-confirm-password').addEventListener('input', function() {
+        const password = document.getElementById('register-password').value;
+        const confirmPassword = this.value;
+
+        if (confirmPassword && password !== confirmPassword) {
+            this.classList.add('error');
+        } else {
+            this.classList.remove('error');
+        }
+    });
+</script>
+</body>
+</html>
