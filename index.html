@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <title>Groceries List - Login</title>
+    <title>Lista de Compras - Login</title>
     <style>
         * {
             margin: 0;
@@ -212,12 +212,12 @@
 </head>
 <body>
 <div class="auth-container">
-    <h1 class="app-title">🛒 Groceries List</h1>
-    <p class="app-subtitle">Collaborative shopping made simple</p>
+    <h1 class="app-title">🛒 Lista de Compras</h1>
+    <p class="app-subtitle">Compras colaborativas simplificadas</p>
 
     <div class="form-tabs">
-        <button class="tab-btn active" onclick="showForm('login')">Login</button>
-        <button class="tab-btn" onclick="showForm('register')">Register</button>
+        <button class="tab-btn active" onclick="showForm('login')">Entrar</button>
+        <button class="tab-btn" onclick="showForm('register')">Cadastrar</button>
     </div>
 
     <div class="form-container">
@@ -229,19 +229,19 @@
             </div>
 
             <div class="form-group">
-                <label for="login-password">Password</label>
+                <label for="login-password">Senha</label>
                 <input type="password" id="login-password" class="form-input" required>
             </div>
 
-            <button type="submit" class="auth-btn">Login</button>
+            <button type="submit" class="auth-btn">Entrar</button>
             <div id="login-error" class="error-message"></div>
-            <div class="loading" id="login-loading">Signing in...</div>
+            <div class="loading" id="login-loading">Entrando...</div>
         </form>
 
         <!-- Register Form -->
         <form id="register-form" class="auth-form">
             <div class="form-group">
-                <label for="register-name">Full Name</label>
+                <label for="register-name">Nome Completo</label>
                 <input type="text" id="register-name" class="form-input" required>
             </div>
 
@@ -251,23 +251,23 @@
             </div>
 
             <div class="form-group">
-                <label for="register-password">Password</label>
+                <label for="register-password">Senha</label>
                 <input type="password" id="register-password" class="form-input" required>
                 <div class="password-requirements">
-                    <div class="requirement" id="req-length">At least 8 characters</div>
-                    <div class="requirement" id="req-number">At least one number</div>
+                    <div class="requirement" id="req-length">Pelo menos 8 caracteres</div>
+                    <div class="requirement" id="req-number">Pelo menos um número</div>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="register-confirm-password">Confirm Password</label>
+                <label for="register-confirm-password">Confirmar Senha</label>
                 <input type="password" id="register-confirm-password" class="form-input" required>
             </div>
 
-            <button type="submit" class="auth-btn">Create Account</button>
+            <button type="submit" class="auth-btn">Criar Conta</button>
             <div id="register-error" class="error-message"></div>
             <div id="register-success" class="success-message"></div>
-            <div class="loading" id="register-loading">Creating account...</div>
+            <div class="loading" id="register-loading">Criando conta...</div>
         </form>
     </div>
 </div>
@@ -360,7 +360,7 @@
         showLoading('login', true);
 
         if (!email || !password) {
-            showError('login-error', 'Please fill in all fields');
+            showError('login-error', 'Por favor, preencha todos os campos');
             showLoading('login', false);
             return;
         }
@@ -375,7 +375,7 @@
                 .single();
 
             if (error || !users) {
-                showError('login-error', 'Invalid email or password');
+                showError('login-error', 'Email ou senha inválidos');
             } else {
                 // Login successful
                 const currentUser = {
@@ -389,7 +389,7 @@
             }
         } catch (err) {
             console.error('Login error:', err);
-            showError('login-error', 'Login failed. Please try again.');
+            showError('login-error', 'Falha no login. Tente novamente.');
         }
 
         showLoading('login', false);
@@ -406,19 +406,19 @@
 
         // Validation
         if (!name || !email || !password || !confirmPassword) {
-            showError('register-error', 'Please fill in all fields');
+            showError('register-error', 'Por favor, preencha todos os campos');
             showLoading('register', false);
             return;
         }
 
         if (!checkPasswordStrength(password)) {
-            showError('register-error', 'Password must meet all requirements');
+            showError('register-error', 'A senha deve atender a todos os requisitos');
             showLoading('register', false);
             return;
         }
 
         if (password !== confirmPassword) {
-            showError('register-error', 'Passwords do not match');
+            showError('register-error', 'As senhas não coincidem');
             showLoading('register', false);
             return;
         }
@@ -432,7 +432,7 @@
                 .single();
 
             if (existingUser) {
-                showError('register-error', 'An account with this email already exists');
+                showError('register-error', 'Já existe uma conta com este email');
                 showLoading('register', false);
                 return;
             }
@@ -455,7 +455,7 @@
             }
 
             // Show success message
-            showSuccess('register-success', 'Account created successfully! You can now login.');
+            showSuccess('register-success', 'Conta criada com sucesso! Você já pode fazer login.');
 
             // Clear form
             document.getElementById('register-form').reset();
@@ -468,7 +468,7 @@
 
         } catch (err) {
             console.error('Registration error:', err);
-            showError('register-error', 'Registration failed. Please try again.');
+            showError('register-error', 'Falha no cadastro. Tente novamente.');
         }
 
         showLoading('register', false);
