@@ -681,7 +681,6 @@ function escapeHtml(text) {
 }
 
 async function syncPendingChanges() {
-    // In a more advanced implementation, you would sync any pending offline changes here
     console.log('Sincronizando mudanças pendentes...');
     await loadInitialData();
 }
